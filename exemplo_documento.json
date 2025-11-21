@@ -1,0 +1,36 @@
+{
+  "tipo": "NOTA_FISCAL",
+  "numero": "NF-2025-001",
+  "empresa": {
+    "razaoSocial": "SBR Prime Soluções em TI Ltda",
+    "cnpj": "12.345.678/0001-90",
+    "endereco": "Rua Exemplo, 123 - São Paulo/SP"
+  },
+  "cliente": {
+    "nome": "João da Silva",
+    "cpf": "123.456.789-00",
+    "email": "joao@email.com"
+  },
+  "itens": [
+    {
+      "codigo": "PROD-001",
+      "descricao": "Licença de Software Premium",
+      "quantidade": 1,
+      "valorUnitario": 2500.00,
+      "valorTotal": 2500.00
+    },
+    {
+      "codigo": "SRV-001",
+      "descricao": "Consultoria Técnica (10h)",
+      "quantidade": 10,
+      "valorUnitario": 150.00,
+      "valorTotal": 1500.00
+    }
+  ],
+  "subtotal": 4000.00,
+  "impostos": 720.00,
+  "valorTotal": 4720.00,
+  "dataEmissao": "2025-11-21T20:00:00.000Z",
+  "formaPagamento": "Cartão de Crédito",
+  "observacoes": "Documento registrado permanentemente na blockchain InterlockLedger (IL2) para garantir autenticidade e rastreabilidade"
+}

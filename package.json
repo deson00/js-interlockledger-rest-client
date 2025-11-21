@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node api_server.js",
+    "test": "node test_api.js",
+    "dev": "nodemon api_server.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,8 @@
   "homepage": "https://github.com/deson00/js-interlockledger-rest-client#readme",
   "dependencies": {
     "axios": "^1.11.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "https": "^1.0.0"
   }
 }

@@ -1,0 +1,10 @@
+{
+  "tipo": "CONTRATO",
+  "numero": "CT-2025-001",
+  "cliente": "EDERSON PEREIRA DE BRITO",
+  "valor": 25000,
+  "data": "2025-11-21",
+  "timestamp": "2025-11-21T20:30:17.699Z",
+  "source": "SBR_PRIME_VERIFICATION_SYSTEM",
+  "version": "1.0"
+}

@@ -1,0 +1,32 @@
+{
+  "numero_gta": "MS-2025-000123",
+  "data_emissao": "2025-11-20",
+  "validade": "2025-11-27",
+  "propriedade_origem": {
+    "nome": "Fazenda Boa Esperança",
+    "municipio": "Campo Grande",
+    "estado": "MS",
+    "cpf_cnpj": "12345678901"
+  },
+  "propriedade_destino": {
+    "nome": "Frigorífico MS Carnes",
+    "municipio": "Dourados",
+    "estado": "MS",
+    "cpf_cnpj": "98765432100"
+  },
+  "responsavel_tecnico": {
+    "nome": "Dr. João Silva",
+    "crmv": "MS12345"
+  },
+  "animais": [
+    {
+      "especie": "Bovino",
+      "quantidade": 50,
+      "finalidade": "Abate",
+      "idade_media_meses": 24
+    }
+  ],
+  "timestamp": "2025-11-21T20:47:18.974Z",
+  "source": "SBR_PRIME_VERIFICATION_SYSTEM",
+  "version": "1.0"
+}

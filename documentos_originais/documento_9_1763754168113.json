@@ -1,0 +1,14 @@
+{
+  "tipo": "TESTE_ARQUIVOS",
+  "titulo": "Teste de Salvamento de Arquivos",
+  "descricao": "Verificando se JSON original e certificado são salvos corretamente",
+  "data": "2025-11-21T19:42:39.568Z",
+  "campos_teste": {
+    "campo1": "Valor 1",
+    "campo2": "Valor 2",
+    "campo3": "Valor 3"
+  },
+  "timestamp": "2025-11-21T19:42:42.812Z",
+  "source": "SBR_PRIME_VERIFICATION_SYSTEM",
+  "version": "1.0"
+}

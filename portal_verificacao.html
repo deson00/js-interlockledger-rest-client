@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Verificação - IL2 Blockchain</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 150, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 200, 150, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            border-top: 4px solid #0096ff;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #1a1a2e;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            color: #0096ff;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .header .company-name {
+            color: #0096ff;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-top: 15px;
+            letter-spacing: 2px;
+        }
+
+        .blockchain-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #0096ff;
+            box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #0096ff 0%, #0077cc 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 150, 255, 0.5);
+            background: linear-gradient(135deg, #0077cc 0%, #005fa3 100%);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .result-header {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-content {
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .result-detail {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+        }
+
+        .result-detail strong {
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-btn {
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-btn:hover {
+            background: #e9ecef;
+            border-color: #0096ff;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e7f3ff 0%, #f0f9ff 100%);
+            border-left: 4px solid #0096ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+        }
+
+        .info-box li {
+            margin: 5px 0;
+            color: #16213e;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0096ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .footer .company-logo {
+            font-weight: 700;
+            color: #0096ff;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #0096ff 0%, #0077cc 100%);
+            color: white;
+            border-bottom: 3px solid #0096ff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="blockchain-icon">🔐</div>
+            <h1>Portal Blockchain IL2</h1>
+            <div class="subtitle">Registre e verifique documentos na Blockchain InterlockLedger</div>
+            <div class="company-name">SBR PRIME</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('registro')">
+                📝 Registrar Documento
+            </button>
+            <button class="tab" onclick="switchTab('verificacao')">
+                🔍 Verificar Documento
+            </button>
+        </div>
+
+        <!-- TAB: REGISTRO DE DOCUMENTO -->
+        <div id="registro" class="tab-content active">
+            <div class="info-box">
+                <h3>📋 Como Registrar</h3>
+                <ul>
+                    <li>Cole seu documento no formato JSON</li>
+                    <li>Clique em "Registrar na Blockchain"</li>
+                    <li>Guarde o código de verificação gerado</li>
+                    <li>Os arquivos serão salvos automaticamente</li>
+                </ul>
+            </div>
+
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="registerJson">
+                        📄 Documento JSON
+                    </label>
+                    <textarea 
+                        id="registerJson" 
+                        name="registerJson"
+                        placeholder='Cole seu documento JSON aqui. Exemplo:&#10;&#10;{&#10;  "tipo": "CONTRATO",&#10;  "numero": "CNTR-2025-001",&#10;  "empresa": "Empresa XYZ Ltda",&#10;  "valor": 50000.00,&#10;  "data": "2025-11-21",&#10;  "observacoes": "Contrato de prestação de serviços"&#10;}'
+                        required
+                        style="min-height: 300px;"
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="btn" id="btnRegistrar">
+                    🔐 Registrar na Blockchain
+                </button>
+            </form>
+
+            <div class="loading" id="loadingRegistro">
+                <div class="spinner"></div>
+                <p>Registrando documento na blockchain...</p>
+            </div>
+
+            <div class="result" id="resultRegistro">
+                <h3 id="resultHeaderRegistro"></h3>
+                <div id="resultContentRegistro"></div>
+            </div>
+        </div>
+
+        <!-- TAB: VERIFICAÇÃO -->
+        <div id="verificacao" class="tab-content">
+            <div class="info-box">
+                <h3>📋 Como Verificar</h3>
+            <ul>
+                <li>Insira o código de verificação fornecido no certificado</li>
+                <li><strong>Opcional:</strong> Cole o JSON do documento (salvo em <code>documentos_originais/</code>)</li>
+                <li>Clique em "Verificar Documento"</li>
+                <li>O sistema verificará o registro na blockchain</li>
+            </ul>
+            <div style="margin-top: 10px; padding: 8px; background: #e3f2fd; border-left: 3px solid #0096ff;">
+                💡 <strong>Dica:</strong> O JSON original foi salvo automaticamente na pasta <code>documentos_originais/</code> durante o registro.
+            </div>
+        </div>
+
+        <form id="verificationForm">
+            <div class="form-group">
+                <label for="verificationCode">
+                    🎫 Código de Verificação
+                </label>
+                <input 
+                    type="text" 
+                    id="verificationCode" 
+                    name="verificationCode"
+                    placeholder="Ex: IL2-123-ABCD1234"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="documentJson">
+                    📄 Documento Original (JSON) <small style="color: #666;">(opcional)</small>
+                </label>
+                <textarea 
+                    id="documentJson" 
+                    name="documentJson"
+                    placeholder='Opcional: Cole aqui o JSON do documento (salvo em documentos_originais/)&#10;&#10;Exemplo:&#10;{&#10;  "tipo": "CONTRATO",&#10;  "numero": "CNTR-001",&#10;  "timestamp": "2025-11-21T...",&#10;  ...&#10;}'
+                ></textarea>
+                <small style="color: #666;">💡 Encontre o JSON em: <code>documentos_originais/documento_{serial}_{timestamp}.json</code></small>
+            </div>
+
+            <div class="form-group">
+                <label>📁 Ou carregar certificado JSON</label>
+                <div class="file-upload">
+                    <label class="file-upload-btn" for="certificateFile">
+                        <span>📤 Clique para selecionar arquivo de certificado</span>
+                    </label>
+                    <input 
+                        type="file" 
+                        id="certificateFile" 
+                        accept=".json"
+                    >
+                    <div id="fileName" class="file-name" style="display: none;"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="verifyBtn">
+                🔍 Verificar Documento
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Consultando blockchain IL2...</p>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-header" id="resultHeader"></div>
+            <div class="result-content" id="resultContent"></div>
+        </div>
+
+        <div class="footer">
+            <div class="company-logo">SBR PRIME</div>
+            <div>Rastreabilidade e Segurança em Blockchain</div>
+            <div>© 2025 SBR Prime - Todos os direitos reservados</div>
+        </div>
+    </div>
+
+    <script>
+        // ===== GERENCIAMENTO DE TABS =====
+        function switchTab(tabName) {
+            // Atualizar tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Ativar tab selecionada
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // ===== TAB DE REGISTRO =====
+        const registrationForm = document.getElementById('registrationForm');
+        const registerJsonInput = document.getElementById('registerJson');
+        const btnRegistrar = document.getElementById('btnRegistrar');
+        const loadingRegistro = document.getElementById('loadingRegistro');
+        const resultRegistro = document.getElementById('resultRegistro');
+        const resultHeaderRegistro = document.getElementById('resultHeaderRegistro');
+        const resultContentRegistro = document.getElementById('resultContentRegistro');
+
+        registrationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const jsonText = registerJsonInput.value.trim();
+
+            if (!jsonText) {
+                showResultRegistro(false, 'Por favor, forneça um documento JSON.');
+                return;
+            }
+
+            // Validar JSON
+            let documento;
+            try {
+                documento = JSON.parse(jsonText);
+            } catch (error) {
+                showResultRegistro(false, 'JSON inválido: ' + error.message);
+                return;
+            }
+
+            // Mostrar loading
+            showLoadingRegistro(true);
+            hideResultRegistro();
+
+            // Registrar documento
+            try {
+                const response = await fetch('/api/registrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ documento: documento })
+                });
+
+                const data = await response.json();
+
+                showLoadingRegistro(false);
+
+                if (!data.success) {
+                    showResultRegistro(false, data.error || 'Erro ao registrar documento');
+                    return;
+                }
+
+                // Exibir resultado
+                const r = data.resultado;
+                resultHeaderRegistro.innerHTML = '✅ DOCUMENTO REGISTRADO!';
+                resultRegistro.className = 'result success show';
+                
+                resultContentRegistro.innerHTML = `
+                    <p style="font-size: 1.1em; margin-bottom: 20px;"><strong>🎉 Seu documento foi registrado com sucesso na blockchain!</strong></p>
+                    
+                    <div class="result-detail" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+                        <strong style="font-size: 1.2em;">🎫 Código de Verificação:</strong><br>
+                        <code style="font-size: 1.5em; background: #fff; padding: 10px 15px; border-radius: 5px; display: inline-block; margin-top: 10px; font-weight: bold; color: #d9534f;">${data.codigoVerificacao}</code>
+                        <p style="margin-top: 10px; color: #856404;">⚠️ <strong>IMPORTANTE:</strong> Guarde este código! Use-o para verificar o documento.</p>
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🔢 Serial:</strong> ${r.serial}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🔗 Chain:</strong> ${r.chainName || r.chainId}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🌐 Network:</strong> ${r.network}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>⏰ Timestamp:</strong> ${new Date(r.timestamp).toLocaleString('pt-BR')}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🔗 Reference:</strong> <code style="font-size: 0.85em; word-break: break-all;">${r.reference}</code>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #d4edda; border-left: 4px solid #28a745; border-radius: 5px;">
+                        <p><strong>📁 Arquivos Salvos:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>📜 <strong>Certificado:</strong> <code>${data.arquivoCertificado}</code></li>
+                            <li>📄 <strong>JSON Original:</strong> <code>${data.arquivoDocumento}</code></li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-left: 4px solid #0096ff; border-radius: 5px;">
+                        <p><strong>💡 Próximos Passos:</strong></p>
+                        <ol style="margin-left: 20px; margin-top: 10px;">
+                            <li>Copie e guarde o código de verificação</li>
+                            <li>Use a aba "Verificar Documento" para testar</li>
+                            <li>Encontre os arquivos salvos nas pastas do projeto</li>
+                        </ol>
+                    </div>
+                `;
+
+            } catch (error) {
+                showLoadingRegistro(false);
+                showResultRegistro(false, 'Erro ao conectar com o servidor: ' + error.message);
+            }
+        });
+
+        function showLoadingRegistro(show) {
+            loadingRegistro.className = show ? 'loading show' : 'loading';
+            btnRegistrar.disabled = show;
+        }
+
+        function hideResultRegistro() {
+            resultRegistro.className = 'result';
+        }
+
+        function showResultRegistro(success, message) {
+            resultRegistro.className = `result ${success ? 'success' : 'error'} show`;
+            resultHeaderRegistro.innerHTML = success ? '✅ Sucesso' : '❌ Erro';
+            resultContentRegistro.innerHTML = `<p>${message}</p>`;
+        }
+
+        // ===== TAB DE VERIFICAÇÃO =====
+        // Elementos do DOM
+        const form = document.getElementById('verificationForm');
+        const verificationCodeInput = document.getElementById('verificationCode');
+        const documentJsonInput = document.getElementById('documentJson');
+        const certificateFileInput = document.getElementById('certificateFile');
+        const fileNameDiv = document.getElementById('fileName');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const loadingDiv = document.getElementById('loading');
+        const resultDiv = document.getElementById('result');
+        const resultHeader = document.getElementById('resultHeader');
+        const resultContent = document.getElementById('resultContent');
+
+        // Upload de arquivo de certificado
+        certificateFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileNameDiv.textContent = `📄 ${file.name}`;
+                fileNameDiv.style.display = 'block';
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const certificate = JSON.parse(event.target.result);
+                        
+                        // Preencher código de verificação
+                        if (certificate.codigoVerificacao) {
+                            verificationCodeInput.value = certificate.codigoVerificacao;
+                        }
+
+                        // Se o certificado contiver o documento original, preencher
+                        if (certificate.dados && certificate.dados.documentoOriginal) {
+                            documentJsonInput.value = JSON.stringify(certificate.dados.documentoOriginal, null, 2);
+                        }
+                    } catch (error) {
+                        alert('Erro ao ler certificado: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Submissão do formulário
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validar inputs
+            const code = verificationCodeInput.value.trim();
+            const jsonText = documentJsonInput.value.trim();
+
+            if (!code) {
+                showResult(false, 'Por favor, informe o código de verificação.');
+                return;
+            }
+
+            // Validar JSON apenas se fornecido
+            let documento = null;
+            if (jsonText) {
+                try {
+                    documento = JSON.parse(jsonText);
+                } catch (error) {
+                    showResult(false, 'JSON inválido. Verifique o formato do documento ou deixe em branco.');
+                    return;
+                }
+            }
+
+            // Validar código
+            const codePattern = /^IL2-\d+-[A-F0-9]{8}$/i;
+            if (!codePattern.test(code)) {
+                showResult(false, 'Código de verificação inválido. Use o formato: IL2-123-ABCD1234');
+                return;
+            }
+
+            // Mostrar loading
+            showLoading(true);
+            hideResult();
+
+            // Verificar documento
+            verificarDocumento(code, documento);
+        });
+
+        /**
+         * Verifica documento usando a API REST
+         */
+        async function verificarDocumento(code, documento) {
+            try {
+                // Chamar API REST
+                const response = await fetch('/api/verificar/codigo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        codigo: code, 
+                        documento: documento 
+                    })
+                });
+
+                const data = await response.json();
+
+                showLoading(false);
+
+                if (!data.success) {
+                    showResult(false, data.error || 'Erro ao verificar documento');
+                    return;
+                }
+
+                const resultado = data.resultado;
+                mostrarResultado(resultado);
+
+            } catch (error) {
+                showLoading(false);
+                showResult(false, 'Erro ao conectar com o servidor: ' + error.message);
+            }
+        }
+
+        /**
+         * Calcula hash SHA-256 de uma string
+         */
+        async function calcularHashSHA256(texto) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(texto);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        /**
+         * Mostra o resultado da verificação
+         */
+        function mostrarResultado(resultado) {
+            // Verificar se documento foi encontrado
+            if (resultado.valido && resultado.encontrado) {
+                resultHeader.innerHTML = '✅ DOCUMENTO AUTÊNTICO';
+                resultDiv.className = 'result success show';
+                
+                // Formatar data
+                const dataRegistro = resultado.timestamp && resultado.timestamp.registro 
+                    ? new Date(resultado.timestamp.registro).toLocaleString('pt-BR')
+                    : 'Data não disponível';
+                
+                resultContent.innerHTML = `
+                    <p><strong>✅ Documento registrado e verificado na blockchain IL2!</strong></p>
+                    <p>Este documento está registrado permanentemente na blockchain e sua autenticidade foi confirmada.</p>
+                    
+                    <div class="result-detail">
+                        <strong>🔢 Serial:</strong> ${resultado.serial}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🎫 Código de Verificação:</strong> <code style="font-size: 1em; background: #e3f2fd; padding: 5px 10px; border-radius: 5px;">${resultado.codigoVerificado || 'N/A'}</code>
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🔗 Chain ID:</strong> <code style="font-size: 0.85em; word-break: break-all;">${resultado.chainId}</code>
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🌐 Network:</strong> ${resultado.network || 'Minerva'}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🔐 Hash do Payload (Blockchain):</strong> 
+                        <code style="font-size: 0.85em; word-break: break-all; background: #f5f5f5; padding: 8px; border-radius: 3px; display: block; margin-top: 5px;">${resultado.hashBlockchain}</code>
+                        <small style="color: #666; margin-top: 5px; display: block;">Este é o hash SHA-256 do payload criptografado registrado na blockchain</small>
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>⏰ Registrado em:</strong> ${dataRegistro}
+                    </div>
+                    
+                    ${resultado.metadados ? `
+                    <div class="result-detail">
+                        <strong>📋 Application ID:</strong> ${resultado.metadados.applicationId}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🏷️ Payload Tag ID:</strong> ${resultado.metadados.payloadTagId}
+                    </div>
+                    
+                    <div class="result-detail">
+                        <strong>🔗 Reference:</strong> <code style="font-size: 0.85em; word-break: break-all;">${resultado.metadados.reference || 'N/A'}</code>
+                    </div>
+                    ` : ''}
+                    
+                    <p style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-left: 5px solid #28a745; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <strong style="font-size: 1.1em; color: #155724;">✅ Verificação Concluída com Sucesso!</strong><br><br>
+                        <span style="color: #155724;">Este documento está <strong>registrado permanentemente</strong> na blockchain InterlockLedger e sua <strong>autenticidade foi confirmada</strong>.</span><br><br>
+                        <small style="color: #155724;">
+                            🔒 <strong>Imutável:</strong> Não pode ser alterado ou deletado<br>
+                            🌐 <strong>Transparente:</strong> Registro público e verificável<br>
+                            ✅ <strong>Confiável:</strong> Tecnologia blockchain certificada
+                        </small>
+                    </p>
+                `;
+            } else {
+                resultHeader.innerHTML = '❌ DOCUMENTO NÃO ENCONTRADO';
+                resultDiv.className = 'result error show';
+                
+                const mensagemErro = resultado.erro || 'Documento não encontrado na blockchain';
+                const detalhesErro = resultado.detalhes || 'Verifique se o código de verificação está correto';
+                
+                resultContent.innerHTML = `
+                    <p><strong>${mensagemErro}</strong></p>
+                    <p>${detalhesErro}</p>
+                    <p style="margin-top: 15px;"><strong>Possíveis causas:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>O código de verificação está incorreto</li>
+                        <li>O documento ainda não foi registrado</li>
+                        <li>Houve erro na sincronização da blockchain</li>
+                    </ul>
+                    <p style="margin-top: 15px; padding: 10px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 5px;">
+                        💡 <strong>Dica:</strong> Verifique se copiou o código completo no formato IL2-SERIAL-HASH
+                    </p>
+                `;
+            }
+        }
+
+        /**
+         * Mostra resultado genérico
+         */
+        function showResult(success, message) {
+            resultDiv.className = `result ${success ? 'success' : 'error'} show`;
+            resultHeader.innerHTML = success ? '✅ Sucesso' : '❌ Erro';
+            resultContent.innerHTML = `<p>${message}</p>`;
+        }
+
+        /**
+         * Esconde resultado
+         */
+        function hideResult() {
+            resultDiv.className = 'result';
+        }
+
+        /**
+         * Mostra/esconde loading
+         */
+        function showLoading(show) {
+            loadingDiv.className = show ? 'loading show' : 'loading';
+            verifyBtn.disabled = show;
+        }
+    </script>
+</body>
+</html>
